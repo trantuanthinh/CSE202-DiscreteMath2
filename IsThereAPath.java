@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 
+//100 done
 public class IsThereAPath {
 
     static InputReader reader;
@@ -23,7 +24,7 @@ public class IsThereAPath {
             int b = reader.nextInt();
             Vertex startVertex = verticesList[a];
             Vertex destinationVertex = verticesList[b];
-            if (BFS(startVertex, destinationVertex)) {
+            if (checkPath(startVertex, destinationVertex)) {
                 stringBuilder.append("Y \n");
             } else {
                 stringBuilder.append("N \n");
@@ -32,32 +33,20 @@ public class IsThereAPath {
         System.out.println(stringBuilder);
     }
 
-    static public boolean BFS(Vertex start, Vertex end) {
-        List<Vertex> openList = new ArrayList<>();
-        List<Vertex> closeList = new ArrayList<>();
-        openList.add(start);
-        while (true) {
-            if (openList.size() == 0) {
-                return false;
-            }
-
-            Vertex checkVertex = openList.get(openList.size() - 1);
-            for (Vertex vertex : checkVertex.adjacentVertices) {
-                openList.add(vertex);
-            }
-
-            openList.remove(checkVertex);
-            closeList.add(checkVertex);
-            checkVertex = openList.get(openList.size() - 1);
-
-            if (checkEqual(checkVertex, start)) {
-                return false;
-            }
-
-            if (checkEqual(checkVertex, end)) {
+    static public boolean checkPath(Vertex start, Vertex end) {
+        List<Vertex> queueList = start.adjacentVertices;
+        for (Vertex vertex : queueList) {
+            if (checkEqual(vertex, end)) {
                 return true;
             }
+
+            for (Vertex vertex_2 : vertex.adjacentVertices) {
+                if (checkEqual(vertex_2, end)) {
+                    return true;
+                }
+            }
         }
+        return false;
     }
 
     private static boolean checkEqual(Vertex checkVertex, Vertex end) {
