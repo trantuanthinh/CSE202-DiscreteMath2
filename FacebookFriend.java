@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 
+//60
 public class FacebookFriend {
 
     static InputReader reader;
