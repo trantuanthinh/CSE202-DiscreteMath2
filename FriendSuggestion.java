@@ -1,3 +1,5 @@
+package src;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,7 +8,7 @@ import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.List;
 
-//100
+//100 done
 public class FriendSuggestion {
 
     static InputReader reader;

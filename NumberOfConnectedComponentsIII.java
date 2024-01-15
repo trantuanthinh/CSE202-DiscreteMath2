@@ -4,11 +4,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.List;
 
-//60
-public class FacebookFriend {
+//100 done
+public class NumberOfConnectedComponentsIII {
 
     static InputReader reader;
 
@@ -19,69 +20,93 @@ public class FacebookFriend {
         int edgesNumber = reader.nextInt();
 
         Vertex[] verticesList = readGraph(verticesNumber, edgesNumber);
-
-        for (int i = 1; i < verticesList.length; i++) {
-            if (verticesList[i].gender.equalsIgnoreCase("Nam")) {
-                stringBuilder.append(verticesList[i].getNumberOfFemale() + " ");
-            } else {
-                stringBuilder.append(verticesList[i].getNumberOfMale() + " ");
+        for (Vertex vertex : verticesList) {
+            Collections.sort(vertex.adjacentVertices,
+                    (vertex1, vertex2) -> Integer.compare(((Vertex) vertex1).id, ((Vertex) vertex2).id));
+        }
+        for (int i = 0; i < verticesList.length; i++) {
+            if (!verticesList[i].isVisited) {
+                Vertex vertex = verticesList[i];
+                ConnectedComponent connectedComponent = new ConnectedComponent();
+                connectedComponent = DFS(vertex, connectedComponent);
+                stringBuilder.append(vertex.id).append(" ").append(connectedComponent.countVertex).append(" ").append(
+                        connectedComponent.countEdge / 2);
+                stringBuilder.append("\n");
             }
         }
-        System.out.print(stringBuilder);
+        System.out.println(stringBuilder);
     }
 
-    static public Vertex[] readGraph(int numberOfVertices, int numberOfEdges) throws IOException {
-        Vertex[] verticesList = new Vertex[numberOfVertices + 1];
-        for (int i = 1; i < verticesList.length; i++) {
+    static public ConnectedComponent DFS(Vertex vertex, ConnectedComponent connectedComponent) {
+        vertex.isVisited = true;
+        for (Vertex vertex2 : vertex.adjacentVertices) {
+            if (vertex2.isVisited) {
+                connectedComponent.addCountEdge();
+            }
+            if (!vertex2.isVisited) {
+                connectedComponent.addCountVertex();
+                connectedComponent.addCountEdge();
+                DFS(vertex2, connectedComponent);
+            }
+        }
+        return connectedComponent;
+    }
+
+    static public class ConnectedComponent {
+        private int countVertex = 1;
+        private int countEdge = 0;
+
+        public ConnectedComponent() {
+        }
+
+        public void addCountVertex() {
+            this.countVertex += 1;
+        }
+
+        public void addCountEdge() {
+            this.countEdge += 1;
+        }
+
+        // public void setCountVertexTo1() {
+        // this.countVertex = 1;
+        // }
+
+        // public void setCountEdgeTo1() {
+        // this.countEdge = 1;
+        // }
+    }
+
+    static public Vertex[] readGraph(int numberOfVertices, int numberOfEdges) {
+        Vertex[] verticesList = new Vertex[numberOfVertices];
+        for (int i = 0; i < verticesList.length; i++) {
             int id = i;
-            String gender = reader.nextLine();
-            verticesList[id] = new Vertex(id, gender);
+            verticesList[id] = new Vertex(id);
         }
 
         for (int i = 0; i < numberOfEdges; i++) {
             int u = reader.nextInt();
             int v = reader.nextInt();
-
-            if (verticesList[u].gender.equalsIgnoreCase("Nam")) {
-                verticesList[v].addMaleAdjacentVertex(verticesList[u]);
-            } else {
-                verticesList[v].addFemaleAdjacentVertex(verticesList[u]);
-            }
-
-            if (verticesList[v].gender.equalsIgnoreCase("Nam")) {
-                verticesList[u].addMaleAdjacentVertex(verticesList[v]);
-            } else {
-                verticesList[u].addFemaleAdjacentVertex(verticesList[v]);
-            }
+            verticesList[v].addAdjacentVertex(verticesList[u]);
+            verticesList[u].addAdjacentVertex(verticesList[v]);
         }
         return verticesList;
     }
 
     static public class Vertex {
         private int id;
-        private String gender;
-        private List<Vertex> maleFriendList = new ArrayList<>();
-        private List<Vertex> femaleFriendList = new ArrayList<>();
+        private boolean isVisited = false;
+        private List<Vertex> adjacentVertices = new ArrayList<>();
 
-        public Vertex(int id, String gender) {
+        public Vertex(int id) {
             this.id = id;
-            this.gender = gender;
         }
 
-        public int getNumberOfMale() {
-            return this.maleFriendList.size();
+        public int getDegree() {
+            return this.adjacentVertices.size();
         }
 
-        public int getNumberOfFemale() {
-            return this.femaleFriendList.size();
-        }
-
-        public void addMaleAdjacentVertex(Vertex vertex) {
-            this.maleFriendList.add(vertex);
-        }
-
-        public void addFemaleAdjacentVertex(Vertex vertex) {
-            this.femaleFriendList.add(vertex);
+        public void addAdjacentVertex(Vertex vertex) {
+            this.adjacentVertices.add(vertex);
         }
 
         public String toString() {
