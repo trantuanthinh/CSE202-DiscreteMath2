@@ -38,14 +38,15 @@ public class NumberOfConnectedComponentsIII {
     }
 
     static public ConnectedComponent DFS(Vertex vertex, ConnectedComponent connectedComponent) {
+        connectedComponent.countEdge += vertex.getDegree();
         vertex.isVisited = true;
         for (Vertex vertex2 : vertex.adjacentVertices) {
-            if (vertex2.isVisited) {
-                connectedComponent.addCountEdge();
-            }
+            // if (vertex2.isVisited) {
+            // connectedComponent.addCountEdge();
+            // }
             if (!vertex2.isVisited) {
                 connectedComponent.addCountVertex();
-                connectedComponent.addCountEdge();
+                // connectedComponent.addCountEdge();
                 DFS(vertex2, connectedComponent);
             }
         }
@@ -66,14 +67,6 @@ public class NumberOfConnectedComponentsIII {
         public void addCountEdge() {
             this.countEdge += 1;
         }
-
-        // public void setCountVertexTo1() {
-        // this.countVertex = 1;
-        // }
-
-        // public void setCountEdgeTo1() {
-        // this.countEdge = 1;
-        // }
     }
 
     static public Vertex[] readGraph(int numberOfVertices, int numberOfEdges) {
