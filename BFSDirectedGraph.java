@@ -2,43 +2,44 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.List;
 
-//100 done
-public class NumberOfConnectedComponents {
+public class BFSDirectedGraph {
 
     static InputReader reader;
 
     public static void main(String[] args) throws IOException {
         reader = new InputReader(System.in);
+        StringBuilder stringBuilder = new StringBuilder();
         int verticesNumber = reader.nextInt();
         int edgesNumber = reader.nextInt();
 
         Vertex[] verticesList = readGraph(verticesNumber, edgesNumber);
         for (Vertex vertex : verticesList) {
-            Collections.sort(vertex.adjacentVertices,
-                    (vertex1, vertex2) -> Integer.compare(((Vertex) vertex1).id, ((Vertex) vertex2).id));
+            BFS(vertex, stringBuilder);
+            // Collections.sort(vertex.adjacentVertices,
+            // (vertex1, vertex2) -> Integer.compare(((Vertex) vertex1).id, ((Vertex)
+            // vertex2).id));
         }
-        int count = 0;
-        for (int i = 0; i < verticesList.length; i++) {
-            if (!verticesList[i].isVisited) {
-                DFS(verticesList[i]);
-                count++;
-            }
-        }
-
-        System.out.println(count);
+        System.out.println(stringBuilder);
     }
 
-    static public void DFS(Vertex vertex) {
-        vertex.isVisited = true;
-        for (Vertex vertex2 : vertex.adjacentVertices) {
+    static public StringBuilder BFS(Vertex vertex, StringBuilder stringBuilder) {
+        List<Vertex> openVertices = new ArrayList<>();
+        List<Vertex> closeVertices = new ArrayList<>();
+
+        openVertices.add(vertex);
+        Vertex checkVertex = openVertices.remove(0);
+        stringBuilder.append(checkVertex.id);
+
+        for (Vertex vertex2 : checkVertex.adjacentVertices) {
             if (!vertex2.isVisited) {
-                DFS(vertex2);
+                openVertices.add(vertex2);
             }
         }
+
+        return stringBuilder;
     }
 
     static public Vertex[] readGraph(int numberOfVertices, int numberOfEdges) {
@@ -51,7 +52,6 @@ public class NumberOfConnectedComponents {
         for (int i = 0; i < numberOfEdges; i++) {
             int u = reader.nextInt();
             int v = reader.nextInt();
-            verticesList[v].addAdjacentVertex(verticesList[u]);
             verticesList[u].addAdjacentVertex(verticesList[v]);
         }
         return verticesList;

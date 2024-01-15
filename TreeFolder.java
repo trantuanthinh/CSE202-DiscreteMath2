@@ -3,67 +3,84 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.InputMismatchException;
 import java.util.List;
 
 //100 done
-public class NumberOfConnectedComponents {
+public class TreeFolder {
 
     static InputReader reader;
 
     public static void main(String[] args) throws IOException {
         reader = new InputReader(System.in);
+        StringBuilder stringBuilder = new StringBuilder();
         int verticesNumber = reader.nextInt();
-        int edgesNumber = reader.nextInt();
 
-        Vertex[] verticesList = readGraph(verticesNumber, edgesNumber);
-        for (Vertex vertex : verticesList) {
-            Collections.sort(vertex.adjacentVertices,
-                    (vertex1, vertex2) -> Integer.compare(((Vertex) vertex1).id, ((Vertex) vertex2).id));
-        }
-        int count = 0;
-        for (int i = 0; i < verticesList.length; i++) {
-            if (!verticesList[i].isVisited) {
-                DFS(verticesList[i]);
-                count++;
+        Hashtable<String, Vertex> verticesTable = readGraph(verticesNumber);
+        Vertex rootVertex = new Vertex(null);
+        for (Vertex vertex : verticesTable.values()) {
+            if (vertex.root) {
+                rootVertex = vertex;
             }
+            Collections.sort(vertex.adjacentVertices,
+                    (vertex1, vertex2) -> vertex1.name.compareToIgnoreCase(vertex2.name));
         }
-
-        System.out.println(count);
+        stringBuilder = DFS(rootVertex, stringBuilder, 0);
+        System.out.println(stringBuilder);
     }
 
-    static public void DFS(Vertex vertex) {
+    static public StringBuilder DFS(Vertex vertex, StringBuilder stringBuilder, int level) {
         vertex.isVisited = true;
+        if (level == 0) {
+            stringBuilder.append("-").append(vertex.name).append("\n");
+        } else {
+            stringBuilder.append("-");
+            for (int i = 0; i < level; i++) {
+                stringBuilder.append("---");
+            }
+            stringBuilder.append(vertex.name).append("\n");
+        }
         for (Vertex vertex2 : vertex.adjacentVertices) {
             if (!vertex2.isVisited) {
-                DFS(vertex2);
+                level++;
+                DFS(vertex2, stringBuilder, level);
+                level--;
             }
         }
+        return stringBuilder;
     }
 
-    static public Vertex[] readGraph(int numberOfVertices, int numberOfEdges) {
-        Vertex[] verticesList = new Vertex[numberOfVertices];
-        for (int i = 0; i < verticesList.length; i++) {
-            int id = i;
-            verticesList[id] = new Vertex(id);
-        }
+    static public Hashtable<String, Vertex> readGraph(int numberOfVertices) throws IOException {
+        Hashtable<String, Vertex> verticesTable = new Hashtable<>();
+        for (int i = 0; i < numberOfVertices - 1; i++) {
+            String u = reader.nextLine();
+            String v = reader.nextLine();
+            if (!verticesTable.containsKey(u)) {
+                Vertex vertex = new Vertex(u);
+                verticesTable.put(u, vertex);
+            }
 
-        for (int i = 0; i < numberOfEdges; i++) {
-            int u = reader.nextInt();
-            int v = reader.nextInt();
-            verticesList[v].addAdjacentVertex(verticesList[u]);
-            verticesList[u].addAdjacentVertex(verticesList[v]);
+            if (!verticesTable.containsKey(v)) {
+                Vertex vertex = new Vertex(v);
+                verticesTable.put(v, vertex);
+            }
+            verticesTable.get(u).addAdjacentVertex(verticesTable.get(v));
+            verticesTable.get(v).addAdjacentVertex(verticesTable.get(u));
         }
-        return verticesList;
+        String root = reader.nextLine();
+        verticesTable.get(root).setRoot();
+        return verticesTable;
     }
 
     static public class Vertex {
-        private int id;
+        private String name;
         private boolean isVisited = false;
+        private boolean root = false;
         private List<Vertex> adjacentVertices = new ArrayList<>();
 
-        public Vertex(int id) {
-            this.id = id;
+        public Vertex(String name) {
+            this.name = name;
         }
 
         public int getDegree() {
@@ -74,8 +91,8 @@ public class NumberOfConnectedComponents {
             this.adjacentVertices.add(vertex);
         }
 
-        public String toString() {
-            return String.valueOf(this.id);
+        public void setRoot() {
+            this.root = true;
         }
     }
 
