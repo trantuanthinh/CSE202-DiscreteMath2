@@ -4,10 +4,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.InputMismatchException;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 //100 done
-public class DFSUndirectedGraph {
+public class BFSUndirectedGraph {
 
     static InputReader reader;
 
@@ -22,23 +24,29 @@ public class DFSUndirectedGraph {
             Collections.sort(vertex.adjacentVertices,
                     (vertex1, vertex2) -> Integer.compare(((Vertex) vertex1).id, ((Vertex) vertex2).id));
         }
-        DFS(verticesList[0], stringBuilder);
+        BFS(verticesList[0], stringBuilder);
         System.out.println(stringBuilder);
     }
 
-    static public StringBuilder DFS(Vertex vertex, StringBuilder stringBuilder) {
+    static public StringBuilder BFS(Vertex vertex, StringBuilder stringBuilder) {
+        Queue<Vertex> queue = new LinkedList<>();
         vertex.isVisited = true;
-        stringBuilder.append(vertex.id).append(" ");
-        for (Vertex vertex2 : vertex.adjacentVertices) {
-            if (!vertex2.isVisited) {
-                DFS(vertex2, stringBuilder);
+        queue.add(vertex);
+        while (!queue.isEmpty()) {
+            Vertex checkVertex = queue.poll();
+            stringBuilder.append(checkVertex).append(" ");
+            for (Vertex vertex2 : checkVertex.adjacentVertices) {
+                if (!vertex2.isVisited) {
+                    vertex2.isVisited = true;
+                    queue.add(vertex2);
+                }
             }
         }
         return stringBuilder;
     }
 
     static public Vertex[] readGraph(int numberOfVertices, int numberOfEdges) {
-        Vertex[] verticesList = new Vertex[numberOfVertices + 1];
+        Vertex[] verticesList = new Vertex[numberOfVertices];
         for (int i = 0; i < verticesList.length; i++) {
             int id = i;
             verticesList[id] = new Vertex(id);
@@ -47,8 +55,8 @@ public class DFSUndirectedGraph {
         for (int i = 0; i < numberOfEdges; i++) {
             int u = reader.nextInt();
             int v = reader.nextInt();
-            verticesList[v].addAdjacentVertex(verticesList[u]);
             verticesList[u].addAdjacentVertex(verticesList[v]);
+            verticesList[v].addAdjacentVertex(verticesList[u]);
         }
         return verticesList;
     }

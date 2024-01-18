@@ -2,9 +2,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.InputMismatchException;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
+//100 done
 public class BFSDirectedGraph {
 
     static InputReader reader;
@@ -17,28 +21,27 @@ public class BFSDirectedGraph {
 
         Vertex[] verticesList = readGraph(verticesNumber, edgesNumber);
         for (Vertex vertex : verticesList) {
-            BFS(vertex, stringBuilder);
-            // Collections.sort(vertex.adjacentVertices,
-            // (vertex1, vertex2) -> Integer.compare(((Vertex) vertex1).id, ((Vertex)
-            // vertex2).id));
+            Collections.sort(vertex.adjacentVertices,
+                    (vertex1, vertex2) -> Integer.compare(((Vertex) vertex1).id, ((Vertex) vertex2).id));
         }
+        BFS(verticesList[0], stringBuilder);
         System.out.println(stringBuilder);
     }
 
     static public StringBuilder BFS(Vertex vertex, StringBuilder stringBuilder) {
-        List<Vertex> openVertices = new ArrayList<>();
-        List<Vertex> closeVertices = new ArrayList<>();
-
-        openVertices.add(vertex);
-        Vertex checkVertex = openVertices.remove(0);
-        stringBuilder.append(checkVertex.id);
-
-        for (Vertex vertex2 : checkVertex.adjacentVertices) {
-            if (!vertex2.isVisited) {
-                openVertices.add(vertex2);
+        Queue<Vertex> queue = new LinkedList<>();
+        vertex.isVisited = true;
+        queue.add(vertex);
+        while (!queue.isEmpty()) {
+            Vertex checkVertex = queue.poll();
+            stringBuilder.append(checkVertex).append(" ");
+            for (Vertex vertex2 : checkVertex.adjacentVertices) {
+                if (!vertex2.isVisited) {
+                    vertex2.isVisited = true;
+                    queue.add(vertex2);
+                }
             }
         }
-
         return stringBuilder;
     }
 
