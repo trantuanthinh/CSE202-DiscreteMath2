@@ -2,68 +2,56 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.List;
 
-//100 done - HandShaking Theorem
-public class NumberOfConnectedComponentsIII {
+//100 done
+public class IsTree {
 
     static InputReader reader;
 
     public static void main(String[] args) throws IOException {
         reader = new InputReader(System.in);
         StringBuilder stringBuilder = new StringBuilder();
-        int verticesNumber = reader.nextInt();
-        int edgesNumber = reader.nextInt();
 
-        Vertex[] verticesList = readGraph(verticesNumber, edgesNumber);
-        for (Vertex vertex : verticesList) {
-            Collections.sort(vertex.adjacentVertices,
-                    (vertex1, vertex2) -> Integer.compare(((Vertex) vertex1).id, ((Vertex) vertex2).id));
-        }
-        for (int i = 0; i < verticesList.length; i++) {
-            if (!verticesList[i].isVisited) {
-                Vertex vertex = verticesList[i];
-                ConnectedComponent connectedComponent = new ConnectedComponent();
-                connectedComponent = DFS(vertex, connectedComponent);
-                stringBuilder.append(vertex.id).append(" ").append(connectedComponent.countVertex).append(" ").append(
-                        connectedComponent.countEdge / 2);
-                stringBuilder.append("\n");
+        int numberOfTestCases = reader.nextInt();
+        for (int i = 0; i < numberOfTestCases; i++) {
+            int verticesNumber = reader.nextInt();
+            int edgesNumber = reader.nextInt();
+            Vertex[] verticesList = readGraph(verticesNumber, edgesNumber);
+            if (!(edgesNumber == verticesNumber - 1)) {
+                stringBuilder.append("NO").append("\n");
+                continue;
+            }
+            DFS(verticesList[0]);
+            if (checkTree(verticesList)) {
+                stringBuilder.append("YES").append("\n");
+            } else {
+                stringBuilder.append("NO").append("\n");
             }
         }
         System.out.println(stringBuilder);
     }
 
-    static public ConnectedComponent DFS(Vertex vertex, ConnectedComponent connectedComponent) {
-        connectedComponent.countEdge += vertex.getDegree();
+    static public boolean checkTree(Vertex[] verticesList) {
+        for (Vertex vertex : verticesList) {
+            if (!vertex.isVisited) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static public void DFS(Vertex vertex) {
         vertex.isVisited = true;
         for (Vertex vertex2 : vertex.adjacentVertices) {
             if (!vertex2.isVisited) {
-                connectedComponent.addCountVertex();
-                DFS(vertex2, connectedComponent);
+                DFS(vertex2);
             }
         }
-        return connectedComponent;
     }
 
-    static public class ConnectedComponent {
-        private int countVertex = 1;
-        private int countEdge = 0;
-
-        public ConnectedComponent() {
-        }
-
-        public void addCountVertex() {
-            this.countVertex += 1;
-        }
-
-        public void addCountEdge() {
-            this.countEdge += 1;
-        }
-    }
-
-    static public Vertex[] readGraph(int numberOfVertices, int numberOfEdges) {
+    static public Vertex[] readGraph(int numberOfVertices, int numberOfEdges) throws IOException {
         Vertex[] verticesList = new Vertex[numberOfVertices];
         for (int i = 0; i < verticesList.length; i++) {
             int id = i;
@@ -73,8 +61,8 @@ public class NumberOfConnectedComponentsIII {
         for (int i = 0; i < numberOfEdges; i++) {
             int u = reader.nextInt();
             int v = reader.nextInt();
-            verticesList[v].addAdjacentVertex(verticesList[u]);
-            verticesList[u].addAdjacentVertex(verticesList[v]);
+            verticesList[v].addAdjacentVertices(verticesList[u]);
+            verticesList[u].addAdjacentVertices(verticesList[v]);
         }
         return verticesList;
     }
@@ -88,16 +76,8 @@ public class NumberOfConnectedComponentsIII {
             this.id = id;
         }
 
-        public int getDegree() {
-            return this.adjacentVertices.size();
-        }
-
-        public void addAdjacentVertex(Vertex vertex) {
+        public void addAdjacentVertices(Vertex vertex) {
             this.adjacentVertices.add(vertex);
-        }
-
-        public String toString() {
-            return String.valueOf(this.id);
         }
     }
 

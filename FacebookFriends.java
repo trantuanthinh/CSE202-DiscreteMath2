@@ -2,12 +2,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.List;
 
-//100 done - HandShaking Theorem
-public class NumberOfConnectedComponentsIII {
+//100 done
+public class FacebookFriends {
 
     static InputReader reader;
 
@@ -18,86 +17,89 @@ public class NumberOfConnectedComponentsIII {
         int edgesNumber = reader.nextInt();
 
         Vertex[] verticesList = readGraph(verticesNumber, edgesNumber);
-        for (Vertex vertex : verticesList) {
-            Collections.sort(vertex.adjacentVertices,
-                    (vertex1, vertex2) -> Integer.compare(((Vertex) vertex1).id, ((Vertex) vertex2).id));
-        }
-        for (int i = 0; i < verticesList.length; i++) {
+
+        for (int i = 1; i < verticesList.length; i++) {
+            TempObject tempObject = new TempObject();
             if (!verticesList[i].isVisited) {
-                Vertex vertex = verticesList[i];
-                ConnectedComponent connectedComponent = new ConnectedComponent();
-                connectedComponent = DFS(vertex, connectedComponent);
-                stringBuilder.append(vertex.id).append(" ").append(connectedComponent.countVertex).append(" ").append(
-                        connectedComponent.countEdge / 2);
-                stringBuilder.append("\n");
+                DFS(verticesList[i], tempObject);
+                for (Vertex vertex : tempObject.listVertices) {
+                    vertex.countMale = tempObject.countMale;
+                    vertex.countFemale = tempObject.countFemale;
+                }
             }
         }
-        System.out.println(stringBuilder);
+
+        for (int i = 1; i < verticesList.length; i++) {
+            stringBuilder.append(verticesList[i].id).append(" ").append(verticesList[i].countMale).append(" ")
+                    .append(verticesList[i].countFemale).append("\n");
+        }
+        System.out.print(stringBuilder);
     }
 
-    static public ConnectedComponent DFS(Vertex vertex, ConnectedComponent connectedComponent) {
-        connectedComponent.countEdge += vertex.getDegree();
+    static public TempObject DFS(Vertex vertex, TempObject tempObject) {
         vertex.isVisited = true;
+        tempObject.addVertices(vertex);
+        if (vertex.gender.equalsIgnoreCase("Nam")) {
+            tempObject.countMale++;
+        } else {
+            tempObject.countFemale++;
+        }
         for (Vertex vertex2 : vertex.adjacentVertices) {
             if (!vertex2.isVisited) {
-                connectedComponent.addCountVertex();
-                DFS(vertex2, connectedComponent);
+                DFS(vertex2, tempObject);
             }
         }
-        return connectedComponent;
+        return tempObject;
     }
 
-    static public class ConnectedComponent {
-        private int countVertex = 1;
-        private int countEdge = 0;
-
-        public ConnectedComponent() {
-        }
-
-        public void addCountVertex() {
-            this.countVertex += 1;
-        }
-
-        public void addCountEdge() {
-            this.countEdge += 1;
-        }
-    }
-
-    static public Vertex[] readGraph(int numberOfVertices, int numberOfEdges) {
-        Vertex[] verticesList = new Vertex[numberOfVertices];
-        for (int i = 0; i < verticesList.length; i++) {
+    static public Vertex[] readGraph(int numberOfVertices, int numberOfEdges) throws IOException {
+        Vertex[] verticesList = new Vertex[numberOfVertices + 1];
+        for (int i = 1; i < verticesList.length; i++) {
             int id = i;
-            verticesList[id] = new Vertex(id);
+            String gender = reader.nextLine();
+            verticesList[id] = new Vertex(id, gender);
         }
 
         for (int i = 0; i < numberOfEdges; i++) {
             int u = reader.nextInt();
             int v = reader.nextInt();
-            verticesList[v].addAdjacentVertex(verticesList[u]);
-            verticesList[u].addAdjacentVertex(verticesList[v]);
+            verticesList[v].addFriendList(verticesList[u]);
+            verticesList[u].addFriendList(verticesList[v]);
         }
         return verticesList;
     }
 
+    static public class TempObject {
+        private List<Vertex> listVertices;
+        private int countMale;
+        private int countFemale;
+
+        public TempObject() {
+            this.listVertices = new ArrayList<>();
+            this.countMale = 0;
+            this.countFemale = 0;
+        }
+
+        public void addVertices(Vertex vertex) {
+            this.listVertices.add(vertex);
+        }
+    }
+
     static public class Vertex {
         private int id;
+        private String gender;
         private boolean isVisited = false;
+        private int countMale;
+        private int countFemale;
         private List<Vertex> adjacentVertices = new ArrayList<>();
 
-        public Vertex(int id) {
+        public Vertex(int id, String gender) {
             this.id = id;
+            this.gender = gender;
         }
 
-        public int getDegree() {
-            return this.adjacentVertices.size();
-        }
-
-        public void addAdjacentVertex(Vertex vertex) {
+        public void addFriendList(Vertex vertex) {
             this.adjacentVertices.add(vertex);
-        }
-
-        public String toString() {
-            return String.valueOf(this.id);
         }
     }
 
