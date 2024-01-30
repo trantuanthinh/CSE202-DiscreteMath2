@@ -19,12 +19,12 @@ public class FacebookFriends {
         Vertex[] verticesList = readGraph(verticesNumber, edgesNumber);
 
         for (int i = 1; i < verticesList.length; i++) {
-            TempObject tempObject = new TempObject();
             if (!verticesList[i].isVisited) {
-                DFS(verticesList[i], tempObject);
-                for (Vertex vertex : tempObject.listVertices) {
-                    vertex.countMale = tempObject.countMale;
-                    vertex.countFemale = tempObject.countFemale;
+                ConnectedComponent connectedComponent = new ConnectedComponent();
+                connectedComponent = DFS(verticesList[i], connectedComponent);
+                for (Vertex vertex : connectedComponent.listVertices) {
+                    vertex.countMale = connectedComponent.countMale;
+                    vertex.countFemale = connectedComponent.countFemale;
                 }
             }
         }
@@ -36,20 +36,20 @@ public class FacebookFriends {
         System.out.print(stringBuilder);
     }
 
-    static public TempObject DFS(Vertex vertex, TempObject tempObject) {
+    static public ConnectedComponent DFS(Vertex vertex, ConnectedComponent connectedComponent) {
         vertex.isVisited = true;
-        tempObject.addVertices(vertex);
+        connectedComponent.addVertices(vertex);
         if (vertex.gender.equalsIgnoreCase("Nam")) {
-            tempObject.countMale++;
+            connectedComponent.countMale++;
         } else {
-            tempObject.countFemale++;
+            connectedComponent.countFemale++;
         }
         for (Vertex vertex2 : vertex.adjacentVertices) {
             if (!vertex2.isVisited) {
-                DFS(vertex2, tempObject);
+                DFS(vertex2, connectedComponent);
             }
         }
-        return tempObject;
+        return connectedComponent;
     }
 
     static public Vertex[] readGraph(int numberOfVertices, int numberOfEdges) throws IOException {
@@ -69,12 +69,12 @@ public class FacebookFriends {
         return verticesList;
     }
 
-    static public class TempObject {
+    static public class ConnectedComponent {
         private List<Vertex> listVertices;
         private int countMale;
         private int countFemale;
 
-        public TempObject() {
+        public ConnectedComponent() {
             this.listVertices = new ArrayList<>();
             this.countMale = 0;
             this.countFemale = 0;

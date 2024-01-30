@@ -7,8 +7,8 @@ import java.util.Hashtable;
 import java.util.InputMismatchException;
 import java.util.List;
 
-//100 done
-public class TreeFolder {
+//ask
+public class TreeFolder2 {
 
     static InputReader reader;
 
@@ -26,28 +26,50 @@ public class TreeFolder {
             Collections.sort(vertex.adjacentVertices,
                     (vertex1, vertex2) -> vertex1.name.compareToIgnoreCase(vertex2.name));
         }
-        stringBuilder = DFS(rootVertex, 0, stringBuilder);
+        DFS(rootVertex, true, 0, "", "", stringBuilder);
         System.out.println(stringBuilder);
     }
 
-    static public StringBuilder DFS(Vertex vertex, int level, StringBuilder stringBuilder) {
+    static public StringBuilder DFS(Vertex vertex, boolean end, int level, String padding, String pointer,
+            StringBuilder stringBuilder) {
         vertex.isVisited = true;
-        if (level == 0) {
-            stringBuilder.append("-").append(vertex.name).append("\n");
-        } else {
-            stringBuilder.append("-");
-            for (int i = 0; i < level; i++) {
-                stringBuilder.append("---");
+        stringBuilder.append(padding).append(pointer).append(vertex.name).append("\n");
+        int lastIndex = vertex.adjacentVertices.size() - 1;
+        while (true) {
+            if (lastIndex == 0 || !vertex.adjacentVertices.get(lastIndex).isVisited) {
+                break;
             }
-            stringBuilder.append(vertex.name).append("\n");
+            lastIndex--;
+        }
+        Vertex lastVertex = vertex.adjacentVertices.get(lastIndex);
+        if (!end) {
+            padding += "\u2502";
+            end = true;
+        } else {
+            padding = padding.substring(0, padding.length());
         }
         for (Vertex vertex2 : vertex.adjacentVertices) {
             if (!vertex2.isVisited) {
+                if (vertex2.name.equalsIgnoreCase(lastVertex.name)) {
+                    pointer = "\u2514\u2500\u2500\u2500";
+                } else {
+                    pointer = "\u251C\u2500\u2500\u2500";
+                    end = false;
+                }
+
+                if (level >= 1) {
+                    padding += "   ";
+                }
                 level++;
-                DFS(vertex2, level, stringBuilder);
+                DFS(vertex2, end, level, padding, pointer, stringBuilder);
                 level--;
+                end = true;
+                if (level >= 1) {
+                    padding = padding.substring(0, padding.length() - 3);
+                }
             }
         }
+
         return stringBuilder;
     }
 
@@ -75,6 +97,7 @@ public class TreeFolder {
 
     static public class Vertex {
         private String name;
+        private int level = 0;
         private boolean isVisited = false;
         private boolean root = false;
         private List<Vertex> adjacentVertices = new ArrayList<>();

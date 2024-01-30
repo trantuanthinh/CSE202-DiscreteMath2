@@ -3,12 +3,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.InputMismatchException;
 import java.util.List;
 
 //100 done
-public class TreeFolder {
+public class FacebookFriends2 {
 
     static InputReader reader;
 
@@ -16,83 +15,91 @@ public class TreeFolder {
         reader = new InputReader(System.in);
         StringBuilder stringBuilder = new StringBuilder();
         int verticesNumber = reader.nextInt();
-
-        Hashtable<String, Vertex> verticesTable = readGraph(verticesNumber);
-        Vertex rootVertex = new Vertex(null);
-        for (Vertex vertex : verticesTable.values()) {
-            if (vertex.root) {
-                rootVertex = vertex;
+        int edgesNumber = reader.nextInt();
+        Vertex[] verticesList = readGraph(verticesNumber, edgesNumber);
+        List<ConnectedComponent> listConnectedComponents = new ArrayList<>();
+        for (int i = 1; i < verticesList.length; i++) {
+            if (!verticesList[i].isVisited) {
+                ConnectedComponent connectedComponent = new ConnectedComponent();
+                connectedComponent = DFS(verticesList[i], connectedComponent);
+                listConnectedComponents.add(connectedComponent);
             }
-            Collections.sort(vertex.adjacentVertices,
-                    (vertex1, vertex2) -> vertex1.name.compareToIgnoreCase(vertex2.name));
         }
-        stringBuilder = DFS(rootVertex, 0, stringBuilder);
-        System.out.println(stringBuilder);
+        Collections.sort(listConnectedComponents,
+                (cc1, cc2) -> Integer.compare(cc1.representativeNumber, cc2.representativeNumber));
+        for (ConnectedComponent connectedComponent : listConnectedComponents) {
+            stringBuilder.append(connectedComponent.representativeNumber).append(" ")
+                    .append(connectedComponent.countMale).append(" ")
+                    .append(connectedComponent.countFemale).append("\n");
+        }
+        System.out.print(stringBuilder);
     }
 
-    static public StringBuilder DFS(Vertex vertex, int level, StringBuilder stringBuilder) {
+    static public ConnectedComponent DFS(Vertex vertex, ConnectedComponent connectedComponent) {
         vertex.isVisited = true;
-        if (level == 0) {
-            stringBuilder.append("-").append(vertex.name).append("\n");
+        connectedComponent.addVertices(vertex);
+        connectedComponent.representativeNumber = vertex.id > connectedComponent.representativeNumber ? vertex.id
+                : connectedComponent.representativeNumber;
+        if (vertex.gender.equalsIgnoreCase("Nam")) {
+            connectedComponent.countMale++;
         } else {
-            stringBuilder.append("-");
-            for (int i = 0; i < level; i++) {
-                stringBuilder.append("---");
-            }
-            stringBuilder.append(vertex.name).append("\n");
+            connectedComponent.countFemale++;
         }
         for (Vertex vertex2 : vertex.adjacentVertices) {
             if (!vertex2.isVisited) {
-                level++;
-                DFS(vertex2, level, stringBuilder);
-                level--;
+                DFS(vertex2, connectedComponent);
             }
         }
-        return stringBuilder;
+        return connectedComponent;
     }
 
-    static public Hashtable<String, Vertex> readGraph(int numberOfVertices) throws IOException {
-        Hashtable<String, Vertex> verticesTable = new Hashtable<>();
-        for (int i = 0; i < numberOfVertices - 1; i++) {
-            String u = reader.nextLine();
-            String v = reader.nextLine();
-            if (!verticesTable.containsKey(u)) {
-                Vertex vertex = new Vertex(u);
-                verticesTable.put(u, vertex);
-            }
-
-            if (!verticesTable.containsKey(v)) {
-                Vertex vertex = new Vertex(v);
-                verticesTable.put(v, vertex);
-            }
-            verticesTable.get(u).addAdjacentVertex(verticesTable.get(v));
-            verticesTable.get(v).addAdjacentVertex(verticesTable.get(u));
+    static public Vertex[] readGraph(int numberOfVertices, int numberOfEdges) throws IOException {
+        Vertex[] verticesList = new Vertex[numberOfVertices + 1];
+        for (int i = 1; i < verticesList.length; i++) {
+            int id = i;
+            String gender = reader.nextLine();
+            verticesList[id] = new Vertex(id, gender);
         }
-        String root = reader.nextLine();
-        verticesTable.get(root).setRoot();
-        return verticesTable;
+
+        for (int i = 0; i < numberOfEdges; i++) {
+            int u = reader.nextInt();
+            int v = reader.nextInt();
+            verticesList[v].addFriendList(verticesList[u]);
+            verticesList[u].addFriendList(verticesList[v]);
+        }
+        return verticesList;
+    }
+
+    static public class ConnectedComponent {
+        private List<Vertex> listVertices;
+        private int countMale;
+        private int countFemale;
+        private int representativeNumber = 0;
+
+        public ConnectedComponent() {
+            this.listVertices = new ArrayList<>();
+            this.countMale = 0;
+            this.countFemale = 0;
+        }
+
+        public void addVertices(Vertex vertex) {
+            this.listVertices.add(vertex);
+        }
     }
 
     static public class Vertex {
-        private String name;
+        private int id;
+        private String gender;
         private boolean isVisited = false;
-        private boolean root = false;
         private List<Vertex> adjacentVertices = new ArrayList<>();
 
-        public Vertex(String name) {
-            this.name = name;
+        public Vertex(int id, String gender) {
+            this.id = id;
+            this.gender = gender;
         }
 
-        public int getDegree() {
-            return this.adjacentVertices.size();
-        }
-
-        public void addAdjacentVertex(Vertex vertex) {
+        public void addFriendList(Vertex vertex) {
             this.adjacentVertices.add(vertex);
-        }
-
-        public void setRoot() {
-            this.root = true;
         }
     }
 
