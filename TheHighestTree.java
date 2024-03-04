@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 
-//100 done
+//66.67
 public class TheHighestTree {
 
     static InputReader reader;
