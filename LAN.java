@@ -17,25 +17,25 @@ public class LAN {
         Vertex[] verticesList = readGraph(verticesNumber);
         DFS(verticesList[0], 0);
         Vertex vertex1 = farthestVertex;
-        max = 0;
+        maxLength = 0;
         for (Vertex vertex : verticesList) {
             vertex.isVisited = false;
         }
         DFS(farthestVertex, 0);
         Vertex vertex2 = farthestVertex;
         int id = Math.min(vertex1.id, vertex2.id);
-        System.out.println(id + " " + max);
+        System.out.println(id + " " + maxLength);
     }
 
-    static int max = 0;
+    static int maxLength = 0;
     static Vertex farthestVertex;
 
     static public void DFS(Vertex vertex, int lengthFromRoot) {
         vertex.isVisited = true;
         for (Edge edge : vertex.edgesList) {
             if (!edge.vertex.isVisited) {
-                if (max < lengthFromRoot + edge.length) {
-                    max = lengthFromRoot + edge.length;
+                if (maxLength < lengthFromRoot + edge.length) {
+                    maxLength = lengthFromRoot + edge.length;
                     farthestVertex = edge.vertex;
                 }
                 DFS(edge.vertex, edge.length + lengthFromRoot);

@@ -6,73 +6,64 @@ import java.util.InputMismatchException;
 import java.util.List;
 
 //100 done
-public class LANEasy {
-
+public class MultiLevelMarketing {
     static InputReader reader;
 
     public static void main(String[] args) throws IOException {
         reader = new InputReader(System.in);
         StringBuilder stringBuilder = new StringBuilder();
-        int verticesNumber = reader.nextInt();
-        Vertex[] verticesList = readGraph(verticesNumber);
-        DFS(verticesList[0], 0);
-        System.out.println(maxLength);
+        int numberOfVertices = reader.nextInt();
+        Vertex[] list = readGraph(numberOfVertices);
+        dfs(list[0], 0);
+        for (Vertex vertex : list) {
+            stringBuilder.append(vertex.id).append(" ").append(vertex.commission).append("\n");
+        }
+        System.out.println(stringBuilder);
     }
 
-    static int maxLength = 0;
-
-    static public void DFS(Vertex vertex, int lengthFromRoot) {
+    public static void dfs(Vertex vertex, int levelFromRoot) {
         vertex.isVisited = true;
-        for (Edge edge : vertex.edgesList) {
-            if (!edge.vertex.isVisited) {
-                maxLength = Math.max(maxLength, lengthFromRoot + edge.length);
-                DFS(edge.vertex, edge.length + lengthFromRoot);
+        vertex.levelFromRoot = levelFromRoot;
+        for (Vertex vertex2 : vertex.adjecentVertices) {
+            if (!vertex2.isVisited) {
+                dfs(vertex2, levelFromRoot + 1);
+                vertex.commission += (int) Math.floor(vertex2.commission / 2);
             }
         }
     }
 
-    static public Vertex[] readGraph(int numberOfVertices)
-            throws IOException {
-        Vertex[] verticesList = new Vertex[numberOfVertices];
-        for (int i = 0; i < verticesList.length; i++) {
-            int id = i;
-            verticesList[id] = new Vertex(id);
+    public static Vertex[] readGraph(int numberOfVertices) {
+        Vertex[] list = new Vertex[numberOfVertices];
+        for (int i = 0; i < numberOfVertices; i++) {
+            int total = reader.nextInt();
+            Vertex vertex = new Vertex(i, total);
+            list[i] = vertex;
         }
-
+        list[0].levelFromRoot = 0;
         for (int i = 0; i < numberOfVertices - 1; i++) {
             int u = reader.nextInt();
             int v = reader.nextInt();
-            int distance = reader.nextInt();
-
-            verticesList[v].addEdges(new Edge(distance, verticesList[u]));
-            verticesList[u].addEdges(new Edge(distance, verticesList[v]));
-
+            list[u].addAdjecentVertices(list[v]);
         }
-        return verticesList;
+        return list;
     }
 
-    static public class Edge {
-        private int length;
-        private Vertex vertex;
-
-        public Edge(int length, Vertex vertex) {
-            this.length = length;
-            this.vertex = vertex;
-        }
-    }
-
-    static public class Vertex {
+    public static class Vertex {
         private int id;
-        private int lengthFromRoot;
+        private int levelFromRoot;
+        private int commission;
+        private double total;
         private boolean isVisited = false;
-        private List<Edge> edgesList = new ArrayList<>();
+        private List<Vertex> adjecentVertices = new ArrayList<Vertex>();
 
-        public Vertex(int id) {
+        public Vertex(int id, int total) {
             this.id = id;
+            this.total = total;
+            this.commission = (int) Math.floor(total * 0.15);
         }
 
-        public void addEdges(Edge edge) {
-            this.edgesList.add(edge);
+        public void addAdjecentVertices(Vertex vertex) {
+            this.adjecentVertices.add(vertex);
         }
     }
 

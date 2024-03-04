@@ -6,7 +6,7 @@ import java.util.InputMismatchException;
 import java.util.List;
 
 //100 done
-public class LANEasy {
+public class TheHighestTree {
 
     static InputReader reader;
 
@@ -15,17 +15,33 @@ public class LANEasy {
         StringBuilder stringBuilder = new StringBuilder();
         int verticesNumber = reader.nextInt();
         Vertex[] verticesList = readGraph(verticesNumber);
+        // for (Vertex vertex : verticesList) {
+        // Collections.sort(vertex.edgesList, (vertex1, vertex2) ->
+        // Integer.compare(vertex1.id, vertex2.id));
+        // }
         DFS(verticesList[0], 0);
-        System.out.println(maxLength);
+        Vertex vertex1 = farthestVertex;
+        maxLength = 0;
+        for (Vertex vertex : verticesList) {
+            vertex.isVisited = false;
+        }
+        DFS(farthestVertex, 0);
+        Vertex vertex2 = farthestVertex;
+        int idMin = Math.min(vertex1.id, vertex2.id);
+        System.out.println(idMin + " " + maxLength);
     }
 
     static int maxLength = 0;
+    static Vertex farthestVertex;
 
     static public void DFS(Vertex vertex, int lengthFromRoot) {
         vertex.isVisited = true;
         for (Edge edge : vertex.edgesList) {
             if (!edge.vertex.isVisited) {
-                maxLength = Math.max(maxLength, lengthFromRoot + edge.length);
+                if (maxLength < lengthFromRoot + edge.length) {
+                    maxLength = lengthFromRoot + edge.length;
+                    farthestVertex = edge.vertex;
+                }
                 DFS(edge.vertex, edge.length + lengthFromRoot);
             }
         }
@@ -42,10 +58,9 @@ public class LANEasy {
         for (int i = 0; i < numberOfVertices - 1; i++) {
             int u = reader.nextInt();
             int v = reader.nextInt();
-            int distance = reader.nextInt();
 
-            verticesList[v].addEdges(new Edge(distance, verticesList[u]));
-            verticesList[u].addEdges(new Edge(distance, verticesList[v]));
+            verticesList[v].addEdges(new Edge(1, verticesList[u]));
+            verticesList[u].addEdges(new Edge(1, verticesList[v]));
 
         }
         return verticesList;
