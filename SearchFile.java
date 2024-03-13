@@ -7,8 +7,8 @@ import java.util.Hashtable;
 import java.util.InputMismatchException;
 import java.util.List;
 
-//100 done
-public class TreeFolder {
+//15
+public class SearchFile {
 
     static InputReader reader;
 
@@ -20,33 +20,30 @@ public class TreeFolder {
         Hashtable<String, Vertex> verticesTable = readGraph(verticesNumber);
         Vertex rootVertex = new Vertex(null);
         for (Vertex vertex : verticesTable.values()) {
-            if (vertex.root) {
+            if (vertex.isRoot) {
                 rootVertex = vertex;
             }
             Collections.sort(vertex.adjacentVertices,
                     (vertex1, vertex2) -> vertex1.name.compareToIgnoreCase(vertex2.name));
         }
-        stringBuilder = DFS(rootVertex, 0, stringBuilder);
+        String checkString = reader.nextLine();
+        stringBuilder = dfs(rootVertex, checkString, stringBuilder);
         System.out.println(stringBuilder);
     }
 
-    static public StringBuilder DFS(Vertex vertex, int level, StringBuilder stringBuilder) {
+    static public StringBuilder dfs(Vertex vertex, String checkString, StringBuilder stringBuilder) {
         vertex.isVisited = true;
-        if (level == 0) {
-            stringBuilder.append("-").append(vertex.name).append("\n");
-        } else {
-            stringBuilder.append("-");
-            for (int i = 0; i < level; i++) {
-                stringBuilder.append("---");
-            }
-            stringBuilder.append(vertex.name).append("\n");
-        }
         for (Vertex vertex2 : vertex.adjacentVertices) {
             if (!vertex2.isVisited) {
-                level++;
-                DFS(vertex2, level, stringBuilder);
-                level--;
+                if (vertex2.name.contains(checkString)) {
+                    vertex2.count++;
+                }
+                stringBuilder = dfs(vertex2, checkString, stringBuilder);
+                vertex.count += vertex2.count;
             }
+        }
+        if (vertex.count != 0 && vertex.adjacentVertices.size() != 1) {
+            stringBuilder.append(vertex.name).append(" ").append(vertex.count).append(" ").append("\n");
         }
         return stringBuilder;
     }
@@ -76,7 +73,8 @@ public class TreeFolder {
     static public class Vertex {
         private String name;
         private boolean isVisited = false;
-        private boolean root = false;
+        private boolean isRoot = false;
+        private int count = 0;
         private List<Vertex> adjacentVertices = new ArrayList<>();
 
         public Vertex(String name) {
@@ -92,7 +90,7 @@ public class TreeFolder {
         }
 
         public void setRoot() {
-            this.root = true;
+            this.isRoot = true;
         }
     }
 

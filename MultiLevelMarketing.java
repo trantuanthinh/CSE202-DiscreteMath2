@@ -50,8 +50,10 @@ public class MultiLevelMarketing {
 
     public static class Vertex {
         private int id;
+        @SuppressWarnings("unused")
         private int levelFromRoot;
         private int commission;
+        @SuppressWarnings("unused")
         private double total;
         private boolean isVisited = false;
         private List<Vertex> adjecentVertices = new ArrayList<Vertex>();
@@ -137,6 +139,7 @@ public class MultiLevelMarketing {
             return !(c >= 33 && c <= 126);
         }
 
+        @SuppressWarnings("unused")
         private double nextDouble() {
             return Double.parseDouble(next());
         }

@@ -12,11 +12,12 @@ public class TheHighestTree {
 
     public static void main(String[] args) throws IOException {
         reader = new InputReader(System.in);
+        @SuppressWarnings("unused")
         StringBuilder stringBuilder = new StringBuilder();
         int verticesNumber = reader.nextInt();
         Vertex[] verticesList = readGraph(verticesNumber);
         // for (Vertex vertex : verticesList) {
-        // Collections.sort(vertex.edgesList, (vertex1, vertex2) ->
+        // Collections.sort(vertex.edgeƯsList, (vertex1, vertex2) ->
         // Integer.compare(vertex1.id, vertex2.id));
         // }
         DFS(verticesList[0], 0);
@@ -78,6 +79,7 @@ public class TheHighestTree {
 
     static public class Vertex {
         private int id;
+        @SuppressWarnings("unused")
         private int lengthFromRoot;
         private boolean isVisited = false;
         private List<Edge> edgesList = new ArrayList<>();
@@ -161,6 +163,7 @@ public class TheHighestTree {
             return !(c >= 33 && c <= 126);
         }
 
+        @SuppressWarnings("unused")
         private double nextDouble() {
             return Double.parseDouble(next());
         }

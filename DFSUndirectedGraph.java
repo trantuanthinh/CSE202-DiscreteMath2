@@ -145,6 +145,7 @@ public class DFSUndirectedGraph {
             return !(c >= 33 && c <= 126);
         }
 
+        @SuppressWarnings("unused")
         private double nextDouble() {
             return Double.parseDouble(next());
         }

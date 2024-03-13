@@ -68,7 +68,9 @@ public class BirthdayGifts {
     }
 
     static public class Vertex {
+        @SuppressWarnings("unused")
         private int id;
+        @SuppressWarnings("unused")
         private int date;
         private int count = 0;
         private boolean hasInNextKDays = false;
@@ -168,6 +170,7 @@ public class BirthdayGifts {
             return !(c >= 33 && c <= 126);
         }
 
+        @SuppressWarnings("unused")
         private double nextDouble() {
             return Double.parseDouble(next());
         }

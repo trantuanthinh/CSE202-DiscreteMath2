@@ -68,6 +68,7 @@ public class IsTree {
     }
 
     static public class Vertex {
+        @SuppressWarnings("unused")
         private int id;
         private boolean isVisited = false;
         private List<Vertex> adjacentVertices = new ArrayList<>();
@@ -151,6 +152,7 @@ public class IsTree {
             return !(c >= 33 && c <= 126);
         }
 
+        @SuppressWarnings("unused")
         private double nextDouble() {
             return Double.parseDouble(next());
         }

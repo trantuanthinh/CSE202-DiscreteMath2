@@ -2,97 +2,91 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
 import java.util.InputMismatchException;
 import java.util.List;
 
 //100 done
-public class TreeFolder {
-
+public class MultiLevelMarketing2 {
     static InputReader reader;
 
     public static void main(String[] args) throws IOException {
         reader = new InputReader(System.in);
         StringBuilder stringBuilder = new StringBuilder();
-        int verticesNumber = reader.nextInt();
-
-        Hashtable<String, Vertex> verticesTable = readGraph(verticesNumber);
-        Vertex rootVertex = new Vertex(null);
-        for (Vertex vertex : verticesTable.values()) {
-            if (vertex.root) {
-                rootVertex = vertex;
-            }
-            Collections.sort(vertex.adjacentVertices,
-                    (vertex1, vertex2) -> vertex1.name.compareToIgnoreCase(vertex2.name));
+        int numberOfVertices = reader.nextInt();
+        Vertex[] list = readGraph(numberOfVertices);
+        long initPrice = reader.nextLong();
+        if (list[0].priceLimit >= initPrice) {
+            dfs1(list[0], initPrice);
         }
-        stringBuilder = DFS(rootVertex, 0, stringBuilder);
+        for (Vertex vertex : list) {
+            stringBuilder.append(vertex.totalProduct).append(" ");
+        }
         System.out.println(stringBuilder);
     }
 
-    static public StringBuilder DFS(Vertex vertex, int level, StringBuilder stringBuilder) {
+    public static void dfs1(Vertex vertex, long initPrice) {
         vertex.isVisited = true;
-        if (level == 0) {
-            stringBuilder.append("-").append(vertex.name).append("\n");
-        } else {
-            stringBuilder.append("-");
-            for (int i = 0; i < level; i++) {
-                stringBuilder.append("---");
-            }
-            stringBuilder.append(vertex.name).append("\n");
-        }
-        for (Vertex vertex2 : vertex.adjacentVertices) {
+        vertex.totalProduct++;
+        for (Vertex vertex2 : vertex.adjecentVertices) {
             if (!vertex2.isVisited) {
-                level++;
-                DFS(vertex2, level, stringBuilder);
-                level--;
+                long price = (long) Math.floor(initPrice + (initPrice * 0.1));
+                if (vertex2.priceLimit >= price) {
+                    dfs1(vertex2, price);
+                } else {
+                    dfs2(vertex2);
+                    vertex.totalProduct += countVertex;
+                    countVertex = 0;
+                }
             }
         }
-        return stringBuilder;
     }
 
-    static public Hashtable<String, Vertex> readGraph(int numberOfVertices) throws IOException {
-        Hashtable<String, Vertex> verticesTable = new Hashtable<>();
+    static int countVertex = 0;
+
+    // Count every vertex in sub-tree with root Vertex vertex
+    public static void dfs2(Vertex vertex) {
+        vertex.isVisited = true;
+        countVertex++;
+        for (Vertex vertex2 : vertex.adjecentVertices) {
+            if (!vertex2.isVisited) {
+                dfs2(vertex2);
+            }
+        }
+    }
+
+    public static Vertex[] readGraph(int numberOfVertices) {
+        Vertex[] list = new Vertex[numberOfVertices];
+        for (int i = 0; i < numberOfVertices; i++) {
+            Vertex vertex = new Vertex(i);
+            list[i] = vertex;
+        }
         for (int i = 0; i < numberOfVertices - 1; i++) {
-            String u = reader.nextLine();
-            String v = reader.nextLine();
-            if (!verticesTable.containsKey(u)) {
-                Vertex vertex = new Vertex(u);
-                verticesTable.put(u, vertex);
-            }
-
-            if (!verticesTable.containsKey(v)) {
-                Vertex vertex = new Vertex(v);
-                verticesTable.put(v, vertex);
-            }
-            verticesTable.get(u).addAdjacentVertex(verticesTable.get(v));
-            verticesTable.get(v).addAdjacentVertex(verticesTable.get(u));
+            int u = reader.nextInt();
+            int v = reader.nextInt();
+            list[u].addAdjecentVertices(list[v]);
+            list[v].addAdjecentVertices(list[u]);
         }
-        String root = reader.nextLine();
-        verticesTable.get(root).setRoot();
-        return verticesTable;
+        for (Vertex vertex : list) {
+            long priceLimit = reader.nextLong();
+            vertex.priceLimit = priceLimit;
+        }
+        return list;
     }
 
-    static public class Vertex {
-        private String name;
+    public static class Vertex {
+        @SuppressWarnings("unused")
+        private int id;
+        private long priceLimit;
         private boolean isVisited = false;
-        private boolean root = false;
-        private List<Vertex> adjacentVertices = new ArrayList<>();
+        private List<Vertex> adjecentVertices = new ArrayList<Vertex>();
+        private int totalProduct;
 
-        public Vertex(String name) {
-            this.name = name;
+        public Vertex(int id) {
+            this.id = id;
         }
 
-        public int getDegree() {
-            return this.adjacentVertices.size();
-        }
-
-        public void addAdjacentVertex(Vertex vertex) {
-            this.adjacentVertices.add(vertex);
-        }
-
-        public void setRoot() {
-            this.root = true;
+        public void addAdjecentVertices(Vertex vertex) {
+            this.adjecentVertices.add(vertex);
         }
     }
 

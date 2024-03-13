@@ -59,6 +59,7 @@ public class TreeHeight {
     static public class Vertex {
         private int id;
         private boolean isVisited = false;
+        @SuppressWarnings("unused")
         private boolean isRoot = false;
         private List<Vertex> adjacentVertices = new ArrayList<>();
 
@@ -149,6 +150,7 @@ public class TreeHeight {
             return !(c >= 33 && c <= 126);
         }
 
+        @SuppressWarnings("unused")
         private double nextDouble() {
             return Double.parseDouble(next());
         }

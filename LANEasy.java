@@ -10,6 +10,7 @@ public class LANEasy {
 
     static InputReader reader;
 
+    @SuppressWarnings("unused")
     public static void main(String[] args) throws IOException {
         reader = new InputReader(System.in);
         StringBuilder stringBuilder = new StringBuilder();
@@ -62,7 +63,9 @@ public class LANEasy {
     }
 
     static public class Vertex {
+        @SuppressWarnings("unused")
         private int id;
+        @SuppressWarnings("unused")
         private int lengthFromRoot;
         private boolean isVisited = false;
         private List<Edge> edgesList = new ArrayList<>();
@@ -146,6 +149,7 @@ public class LANEasy {
             return !(c >= 33 && c <= 126);
         }
 
+        @SuppressWarnings("unused")
         private double nextDouble() {
             return Double.parseDouble(next());
         }

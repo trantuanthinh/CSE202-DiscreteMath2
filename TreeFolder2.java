@@ -97,6 +97,7 @@ public class TreeFolder2 {
 
     static public class Vertex {
         private String name;
+        @SuppressWarnings("unused")
         private int level = 0;
         private boolean isVisited = false;
         private boolean root = false;
@@ -189,6 +190,7 @@ public class TreeFolder2 {
             return !(c >= 33 && c <= 126);
         }
 
+        @SuppressWarnings("unused")
         private double nextDouble() {
             return Double.parseDouble(next());
         }

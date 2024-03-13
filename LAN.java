@@ -12,6 +12,7 @@ public class LAN {
 
     public static void main(String[] args) throws IOException {
         reader = new InputReader(System.in);
+        @SuppressWarnings("unused")
         StringBuilder stringBuilder = new StringBuilder();
         int verticesNumber = reader.nextInt();
         Vertex[] verticesList = readGraph(verticesNumber);
@@ -75,6 +76,7 @@ public class LAN {
 
     static public class Vertex {
         private int id;
+        @SuppressWarnings("unused")
         private int lengthFromRoot;
         private boolean isVisited = false;
         private List<Edge> edgesList = new ArrayList<>();
@@ -158,6 +160,7 @@ public class LAN {
             return !(c >= 33 && c <= 126);
         }
 
+        @SuppressWarnings("unused")
         private double nextDouble() {
             return Double.parseDouble(next());
         }
